@@ -1,0 +1,9 @@
+rule calculate_gc:
+    input:
+        "test1.fa",
+        "test2.fa"
+    output:
+        "020.gc/test1.gc"
+        "020.gc/test2.gc"
+    shell:
+        "geecee -sequence {input} -outfile {output} "
