@@ -6,4 +6,7 @@ rule calculate_gc:
         "020.gc/test1.gc"
         "020.gc/test2.gc"
     shell:
-        "geecee -sequence {input} -outfile {output} "
+        """
+        python gc_calc.py 'test1.fa' '020.gc/test1.gc
+         python gc_calc.py 'test2.fa' '020.gc/test2.gc'
+        """
