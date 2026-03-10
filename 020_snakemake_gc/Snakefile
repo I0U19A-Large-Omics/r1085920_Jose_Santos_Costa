@@ -10,7 +10,12 @@ rule create_tsv:
     output:
         "030.output/output.tsv"
     shell:
-        "cat {input} > {output}"
+        """
+        head -n 1 {input[0]} > {output}
+        for f in {input}; do
+            tail -n +2 $f >> {output}
+        done
+        """
 
 rule calculate_gc:
     input:
