@@ -1,12 +1,24 @@
+SAMPLES = ['test1','test2']
+
+rule all:
+    input:
+        "030.output/output.tsv"
+
+rule create_tsv:
+    input:
+        expand("020.gc/{sample}.gc",sample=SAMPLES)
+    output:
+        "030.output/output.tsv"
+    shell:
+        "cat {input} > {output}"
+
 rule calculate_gc:
     input:
-        "test1.fa",
-        "test2.fa"
+        "{sample}.fa"
     output:
-        "020.gc/test1.gc"
-        "020.gc/test2.gc"
+        "020.gc/{sample}.gc"
     shell:
         """
-        python gc_calc.py 'test1.fa' '020.gc/test1.gc
-         python gc_calc.py 'test2.fa' '020.gc/test2.gc'
+        export PATH=/lustre1/project/stg_00079/teaching/I0U19a_conda_2024/bin:$PATH
+        python gc_calc.py '{input}' '{output}'
         """
