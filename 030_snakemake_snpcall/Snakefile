@@ -11,7 +11,7 @@ rule all:
         expand("bam_output/{sample}.bam.bai", sample=SAMPLES),
         "vcf/raw_snps.vcf",
         "vcf/clean_snps.vcf",
-        "vcf/annotated_snps.vcf""
+        "vcf/annotated_snps.vcf"
 
 
 #check the checksums of the fastq files 
