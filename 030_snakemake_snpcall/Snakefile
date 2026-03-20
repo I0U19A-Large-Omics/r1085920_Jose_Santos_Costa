@@ -11,7 +11,8 @@ rule all:
         expand("bam_output/{sample}.bam.bai", sample=SAMPLES),
         "vcf/raw_snps.vcf",
         "vcf/clean_snps.vcf",
-        "vcf/annotated_snps.vcf"
+        "vcf/annotated_snps.vcf",
+        "100.final/snps.annotated.tsv"
 
 
 #check the checksums of the fastq files 
@@ -111,6 +112,21 @@ rule snp_annotation:
         java -Xmx4g -jar {params.snpeff_jar} eff hg19 -dataDir /staging/leuven/stg_00079/teaching/snpeff_db \
         {input} > {output}
         """
+
+#create the final annotated tsv
+rule create_annotated_tsv:
+    input:
+        "vcf/annotated_snps.vcf"
+    output:
+        "100.final/snps.annotated.tsv"
+    shell:
+        """
+        mkdir -p 100.final
+        bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%INFO/ANN\t[%GT\t]\n' \
+        -o {output} {input}
+        """
+
+
 
 
 
