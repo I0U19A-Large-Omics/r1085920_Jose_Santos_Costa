@@ -85,14 +85,16 @@ rule snp_cleaning:
     output:
         "vcf/clean_snps.vcf"
     params:
-        db = DB
+        db=DB
     shell:
-        "cat {input} \
-    | vt decompose - \
-    | vt normalize -n -r {params.db} - \
-    | vt uniq - \
-    | vt view -f "QUAL>20" -h - \
-    > {output}"
+        """
+        cat {input} \
+        | vt decompose - \
+        | vt normalize -n -r {params.db} - \
+        | vt uniq - \
+        | vt view -f "QUAL>20" -h - \
+        > {output}
+        """
 
 
 
