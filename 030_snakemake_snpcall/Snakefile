@@ -105,11 +105,12 @@ rule snp_annotation:
     output:
         "vcf/annotated_snps.vcf"
     params:
-        snpeff_jar = SNPEFF_JAR
+        snpeff_jar=SNPEFF_JAR
     shell:
-        "java -Xmx3400m -jar {snpeff_jar} eff hg19 -dataDir /staging/leuven/stg_00079/teaching/snpeff_db \
-        {input} > {output}"
-
+        """
+        java -Xmx4g -jar {params.snpeff_jar} eff hg19 -dataDir /staging/leuven/stg_00079/teaching/snpeff_db \
+        {input} > {output}
+        """
 
 
 
