@@ -5,13 +5,6 @@ SNPEFF_JAR = "/lustre1/project/stg_00079/teaching/I0U19a_conda_2026/share/snpeff
 
 rule all:
     input:
-        expand("fastqc_output/{sample}_fastqc.html", sample=SAMPLES),
-        expand("fastqc_output/{sample}_fastqc.zip", sample=SAMPLES),
-        expand("bam_output/{sample}.bam", sample=SAMPLES),
-        expand("bam_output/{sample}.bam.bai", sample=SAMPLES),
-        "vcf/raw_snps.vcf",
-        "vcf/clean_snps.vcf",
-        "vcf/annotated_snps.vcf",
         "100.final/snps.annotated.tsv"
 
 
