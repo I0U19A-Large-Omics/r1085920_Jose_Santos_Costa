@@ -8,31 +8,48 @@ rule all:
         "100.final/snps.annotated.tsv"
 
 
-#check the checksums of the fastq files 
-rule check_fastq_checksums:
+#check the checksums and format of the fastq files 
+rule checksum_fastq:
     input:
         expand("data/{sample}.fastq",sample=SAMPLES),
         md5 ="data/checksums.md5"
     output: 
-        "checksums_verified.flag"
+        md5="validated/checksums_verified.flag"
     shell:
         """
+        mkdir -p validated
         md5sum -c {input.md5}
-        touch {output} 
+        touch {output}
+        """
+
+#validate the if the files are indeed fastq format files
+rule validate_fastq:
+    input:
+        fastq="data/{sample}.fastq",
+        checksum="validated/checksums_verified.flag"
+    output:
+        "validated/{sample}.fastq.ok"
+    shell:
+        """
+        seqkit stats {input.fastq} > /dev/null
+        touch {output}
         """
 
 #run the fastqc on each fastq file
 rule run_fastqc:
     input:
-        expand("data/{sample}.fastq",sample=SAMPLES)
+        fastq="data/{sample}.fastq",
+        check="validated/{sample}.fastq.ok"
     output:
-        expand("fastqc_output/{sample}_fastqc.html",sample=SAMPLES),
-        expand("fastqc_output/{sample}_fastqc.zip",sample=SAMPLES)
+        html="fastqc_output/{sample}_fastqc.html",
+        zip="fastqc_output/{sample}_fastqc.zip"
     shell:
         """
         mkdir -p fastqc_output
-        fastqc {input} -o fastqc_output
+        fastqc {input.fastq} -o fastqc_output
         """
+
+
 #align reads
 rule align_reads:
     input:
@@ -47,15 +64,29 @@ rule align_reads:
         bwa mem {params.db} {input} | samtools sort -o {output} - 
         """
 
+#validate if the files are indeed bam files
+rule validate_bam:
+    input:
+        "bam_output/{sample}.bam"
+    output:
+        "validated/{sample}.bam.ok"
+    shell:
+        """
+        samtools quickcheck {input}
+        touch {output}
+        """
 
 #create indici
 rule create_indici:
     input:
-        "bam_output/{sample}.bam"
+        bam="bam_output/{sample}.bam",
+        check="validated/{sample}.bam.ok"
     output:
         "bam_output/{sample}.bam.bai"
     shell:
-        "samtools index {input}"
+        """
+        samtools index {input.bam}
+        """
 
 
 #SNP calling
@@ -72,30 +103,58 @@ rule snp_calling:
         bcftools mpileup -Ou -f {params.db} {input} | bcftools call -mv -Ov -o {output}
         """
 
+# Validate the raw VCF before cleaning
+rule validate_vcf:
+    input:
+        vcf = "vcf/raw_snps.vcf",
+        ref = DB
+    output:
+        ok = "validated/raw_snps.vcf.ok",
+        report = "vcf/raw_snps.validator_report.txt"
+    shell:
+        """
+        vcf-validator -i {input.vcf} -r {input.ref} > {output.report}
+        touch {output.ok}
+        """
+
 #SNP cleaning
 rule snp_cleaning:
     input:
-        "vcf/raw_snps.vcf"
+        vcf="vcf/raw_snps.vcf",
+        check="validated/raw_snps.vcf.ok"
     output:
         "vcf/clean_snps.vcf"
     params:
         db=DB
     shell:
         """
-        cat {input} \
+        cat {input.vcf} \
         | vt decompose - \
         | vt normalize -n -r {params.db} - \
         | vt uniq - \
         | vt view -f "QUAL>20" -h - \
         > {output}
         """
-
+#validation of the clean vcf files
+rule validate_clean_vcf:
+    input:
+        vcf = "vcf/clean_snps.vcf",
+        ref = DB
+    output:
+        ok = "validated/clean_snps.vcf.ok",
+        report = "vcf/clean_snps.validator_report.txt"
+    shell:
+        """
+        vcf-validator -i {input.vcf} -r {input.ref} > {output.report}
+        touch {output.ok}
+        """
 
 
 #SNP Annotation
 rule snp_annotation:
     input:
-        "vcf/clean_snps.vcf"
+        vcf="vcf/clean_snps.vcf",
+        check="validated/clean_snps.vcf.ok"
     output:
         "vcf/annotated_snps.vcf"
     params:
@@ -103,20 +162,34 @@ rule snp_annotation:
     shell:
         """
         java -Xmx4g -jar {params.snpeff_jar} eff hg19 -dataDir /staging/leuven/stg_00079/teaching/snpeff_db \
-        {input} > {output}
+        {input.vcf} > {output}
+        """
+
+rule validate_annotated_vcf:
+    input:
+        vcf = "vcf/annotated_snps.vcf"
+    output:
+        ok = "validated/annotated_snps.vcf.ok",
+        report = "vcf/annotated_snps.validator_report.txt"
+    shell:
+        """
+        bcftools view {input.vcf} > /dev/null
+        grep -q "ANN=" {input.vcf} || (echo "No annotation found in {input.vcf}" >&2; exit 1)
+        touch {output.ok}
         """
 
 #create the final annotated tsv
 rule create_annotated_tsv:
     input:
-        "vcf/annotated_snps.vcf"
+        vcf="vcf/annotated_snps.vcf",
+        check="validated/annotated_snps.vcf.ok"
     output:
         "100.final/snps.annotated.tsv"
     shell:
         """
         mkdir -p 100.final
         bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%INFO/ANN\t[%GT\t]\n' \
-        -o {output} {input}
+        -o {output} {input.vcf}
         """
 
 
