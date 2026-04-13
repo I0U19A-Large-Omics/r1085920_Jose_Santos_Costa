@@ -1,0 +1,11 @@
+snp_calling_tests/align_reads
+snp_calling_tests/create_annotated_tsv
+snp_calling_tests/snp_annotation
+snp_calling_tests/snp_calling
+snp_calling_tests/snp_cleaning
+*.bam
+*.bai
+*.sam
+*.vcf
+*.vcf.gz
+*.log
