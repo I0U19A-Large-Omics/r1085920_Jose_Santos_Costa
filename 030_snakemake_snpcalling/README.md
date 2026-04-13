@@ -70,4 +70,9 @@ The pipeline generates several directories to keep the workspace organized:
 
 ## Testing Strategy
 
-Each rule in the pipeline was tested individually using the built-in testing utilities provided by :contentReference[oaicite:0]{index=0}. This approach follows the official Snakemake testing framework guidelines to ensure that every step (from FASTQ validation to final annotation) behaves correctly in isolation before integrating into the full workflow.
+The pipeline's reliability is validated using the [official Snakemake testing framework](https://snakemake.readthedocs.io/en/stable/snakefiles/testing.html). To ensure that every step—from initial FASTQ validation to the final SnpEff annotation—behaves correctly, we utilize Snakemake's built-in `--generate-unit-tests` utility. 
+
+This feature automatically generates a `pytest`-based suite of unit tests for the workflow. By executing these tests, we can verify that each individual rule runs successfully in an isolated environment and produces the exact expected output before the full pipeline is integrated or deployed on production data.
+
+To run the testing suite locally, you can use:
+`pytest .tests/unit/`
