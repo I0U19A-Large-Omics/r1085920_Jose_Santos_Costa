@@ -53,7 +53,9 @@ rule run_fastqc:
 #align reads
 rule align_reads:
     input:
-       "data/{sample}.fastq"
+       fastq = "data/{sample}.fastq"
+       check = "validated/{sample}.fastq.ok"
+       fastqc = "fastqc_output/{sample}_fastqc.html"
     output:
         "bam_output/{sample}.bam"
     params:
@@ -61,7 +63,7 @@ rule align_reads:
     shell:
         """
         mkdir -p bam_output
-        bwa mem {params.db} {input} | samtools sort -o {output} - 
+        bwa mem {params.db} {input.fastq} | samtools sort -o {output} - 
         """
 
 #validate if the files are indeed bam files
