@@ -11,8 +11,8 @@ rule all:
 #check the checksums and format of the fastq files 
 rule checksum_fastq:
     input:
-        expand("data/{sample}.fastq",sample=SAMPLES),
-        md5 ="data/checksums.md5"
+        expand("{sample}.fastq",sample=SAMPLES),
+        md5 ="checksums.md5"
     output: 
         md5="validated/checksums_verified.flag"
     shell:
@@ -25,7 +25,7 @@ rule checksum_fastq:
 #validate the if the files are indeed fastq format files
 rule validate_fastq:
     input:
-        fastq="data/{sample}.fastq",
+        fastq="{sample}.fastq",
         checksum="validated/checksums_verified.flag"
     output:
         "validated/{sample}.fastq.ok"
@@ -38,7 +38,7 @@ rule validate_fastq:
 #run the fastqc on each fastq file
 rule run_fastqc:
     input:
-        fastq="data/{sample}.fastq",
+        fastq="{sample}.fastq",
         check="validated/{sample}.fastq.ok"
     output:
         html="fastqc_output/{sample}_fastqc.html",
@@ -53,7 +53,7 @@ rule run_fastqc:
 #align reads
 rule align_reads:
     input:
-       fastq = "data/{sample}.fastq"
+       fastq = "{sample}.fastq"
        check = "validated/{sample}.fastq.ok"
        fastqc = "fastqc_output/{sample}_fastqc.html"
     output:
