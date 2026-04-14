@@ -202,8 +202,9 @@ rule create_annotated_tsv:
     shell:
         """
         mkdir -p 100.final
-        bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%INFO/ANN\t[%GT\t]\n' \
-        -o {output} {input.vcf}
+        echo -e "CHROM\tPOS\tREF\tALT\tQUAL\tANN\tGT" > {output}
+        bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%INFO/ANN\t[%GT]\n' \
+        {input.vcf} >> {output}
         """
 
 
