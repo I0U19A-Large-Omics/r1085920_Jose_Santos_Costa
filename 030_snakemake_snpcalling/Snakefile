@@ -146,7 +146,6 @@ rule validate_clean_vcf:
         ok = "validated/clean_snps.vcf.ok",
         report = "vcf/clean_snps.stats.txt"
     shell:
-
         """
         mkdir -p vcf
         bcftools view {input.vcf} > /dev/null
