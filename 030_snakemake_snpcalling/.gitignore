@@ -9,3 +9,7 @@ snp_calling_tests/snp_cleaning
 *.vcf
 *.vcf.gz
 *.log
+venv/
+.venv/
+env/
+.conda/
