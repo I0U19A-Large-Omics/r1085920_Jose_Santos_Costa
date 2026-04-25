@@ -5,7 +5,8 @@ SNPEFF_JAR = "/lustre1/project/stg_00079/teaching/I0U19a_conda_2026/share/snpeff
 
 rule all:
     input:
-        "100.final/snps.annotated.tsv"
+        tsv = "100.final/snps.annotated.tsv",
+        sql_db = "150.db/snps.sqlite"
 
 
 #check the checksums and format of the fastq files 
@@ -205,6 +206,16 @@ rule create_annotated_tsv:
         echo -e "CHROM\tPOS\tREF\tALT\tQUAL\tANN\tGT" > {output}
         bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%INFO/ANN\t[%GT]\n' \
         {input.vcf} >> {output}
+        """
+
+rule create_database:
+    input:
+        vcf = "vcf/annotated_snps.vcf"
+    output:
+        "150.db/snps.sqlite"
+    shell:
+        """
+        python load_vcf_to_sqlite.py {input.vcf} {output}
         """
 
 
