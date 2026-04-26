@@ -45,7 +45,7 @@ The workflow consists of the following sequential steps, including strict valida
 10. **`snp_annotation`**: Annotates the genetic impact of the variants using SnpEff against the `hg38` database.
 11. **`validate_annotated_vcf`**: Strict validation step that parses the annotated VCF to ensure SnpEff successfully added the `ANN=` (annotation) field.
 12. **`create_annotated_tsv`**: Extracts the Chromosome, Position, Reference allele, Alternate allele, Quality, Annotation, and Genotype into a highly readable final TSV file.
-13. 13. **`create_database`**: Parses the final annotated VCF using a custom Python script (`load_vcf_to_sqlite.py`) to build a relational SQLite database (`snps.sqlite`) with tables for SNPS, EFFECTS, and CALLS.
+13. **`create_database`**: Parses the final annotated VCF using a custom Python script (`load_vcf_to_sqlite.py`) to build a relational SQLite database (`snps.sqlite`) with tables for SNPS, EFFECTS, and CALLS.
 
 ## Usage
 
