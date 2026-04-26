@@ -51,7 +51,6 @@ def main(vcf,db):
     df_effects = pd.DataFrame(effects)
     df_calls = pd.DataFrame(calls)
     
-    Path.mkdir("150.db",exist_ok=True)
     with sqlite3.connect(db) as con:
         df_snps.to_sql("SNPS",con,if_exists='replace')
         df_effects.to_sql("EFFECTS",con,if_exists='replace')
