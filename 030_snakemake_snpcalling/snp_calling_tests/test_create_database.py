@@ -13,13 +13,13 @@ from subprocess import check_output
 sys.path.insert(0, os.path.dirname(__file__))
 
 
-def test_snp_calling(conda_prefix):
+def test_create_database(conda_prefix):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir) / "workdir"
-        config_path = Path(".tests/unit/snp_calling/config")
-        data_path = Path(".tests/unit/snp_calling/data")
-        expected_path = Path(".tests/unit/snp_calling/expected")
+        config_path = Path(".tests/unit/create_database/config")
+        data_path = Path(".tests/unit/create_database/data")
+        expected_path = Path(".tests/unit/create_database/expected")
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)
@@ -33,7 +33,7 @@ def test_snp_calling(conda_prefix):
                 "python",
                 "-m",
                 "snakemake",
-                "vcf/raw_snps.vcf",
+                "150.db/snps.sqlite",
                 "--snakefile",
                 "Snakefile",
                 "-f",

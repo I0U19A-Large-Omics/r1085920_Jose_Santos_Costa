@@ -17,9 +17,9 @@ def test_snp_cleaning(conda_prefix):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir) / "workdir"
-        config_path = Path("snp_calling_tests/snp_cleaning/config")
-        data_path = Path("snp_calling_tests/snp_cleaning/data")
-        expected_path = Path("snp_calling_tests/snp_cleaning/expected")
+        config_path = Path(".tests/unit/snp_cleaning/config")
+        data_path = Path(".tests/unit/snp_cleaning/data")
+        expected_path = Path(".tests/unit/snp_cleaning/expected")
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)

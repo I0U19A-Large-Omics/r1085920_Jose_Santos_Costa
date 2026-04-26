@@ -17,9 +17,9 @@ def test_align_reads(conda_prefix):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir) / "workdir"
-        config_path = Path("snp_calling_tests/align_reads/config")
-        data_path = Path("snp_calling_tests/align_reads/data")
-        expected_path = Path("snp_calling_tests/align_reads/expected")
+        config_path = Path(".tests/unit/align_reads/config")
+        data_path = Path(".tests/unit/align_reads/data")
+        expected_path = Path(".tests/unit/align_reads/expected")
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)
