@@ -6,8 +6,9 @@ SNPEFF_JAR = "/lustre1/project/stg_00079/teaching/I0U19a_conda_2026/share/snpeff
 rule all:
     input:
         tsv = "100.final/snps.annotated.tsv",
-        sql_db = "150.db/snps.sqlite"
-
+        sql_db = "150.db/snps.sqlite",
+        fig1 = "160.figures/fig1_impact_severity.svg",
+        fig2 = "160.figures/fig2_snp_quality_scores.svg"
 
 #check the checksums and format of the fastq files 
 rule checksum_fastq:
@@ -219,6 +220,19 @@ rule create_database:
         echo "Running DB queries"
         python run_queries.py {output.db}
         echo "Finished the queries"
+        """
+rule create_figures:
+    input:
+        db = "150.db/snps.sqlite"
+    params:
+        folder = "160.figures"
+    output:
+        
+        fig1 = "160.figures/fig1_impact_severity.svg"
+        fig2 = "160.figures/fig2_snp_quality_scores.svg"
+    shell:
+        """
+        python visualization.py {input.db} {params.folder}
         """
 
 
