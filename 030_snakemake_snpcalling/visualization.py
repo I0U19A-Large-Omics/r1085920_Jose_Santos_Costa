@@ -7,25 +7,30 @@ from pathlib import Path
 
 DB = "150.db/snps.sqlite"
 def number_of_snps_plot(db,output):
-    with sqlite3.connect(db) as conn:
-        query = """
-        SELECT 
-            CALLS.s_name, 
-            EFFECTS.mod as impact, 
-            COUNT(DISTINCT SNPS.pos) as snp_count
-        FROM 
-            SNPS
-        JOIN 
-            EFFECTS ON SNPS.id = EFFECTS.id
-        JOIN 
-            CALLS ON SNPS.id = CALLS.id
-        WHERE 
-            CALLS.genotype NOT IN ('0/0', '0|0', '0', './.', '0/.')
-        GROUP BY 
-            CALLS.s_name, 
-            EFFECTS.mod;
-        """
-        df = pd.read_sql_query(query, conn)
+    try:
+        with sqlite3.connect(db) as conn:
+            query = """
+            SELECT 
+                CALLS.s_name, 
+                EFFECTS.mod as impact, 
+                COUNT(DISTINCT SNPS.pos) as snp_count
+            FROM 
+                SNPS
+            JOIN 
+                EFFECTS ON SNPS.id = EFFECTS.id
+            JOIN 
+                CALLS ON SNPS.id = CALLS.id
+            WHERE 
+                CALLS.genotype NOT IN ('0/0', '0|0', '0', './.', '0/.')
+            GROUP BY 
+                CALLS.s_name, 
+                EFFECTS.mod;
+            """
+            df = pd.read_sql_query(query, conn)
+
+    except sqlite3.DatabaseError as e:
+        print("The following error ocurred when trying to open the database:",e)
+    
 
     impact_order = ['HIGH', 'MODERATE', 'LOW', 'MODIFIER']
     df['impact'] = pd.Categorical(df['impact'], categories=impact_order, ordered=True)
@@ -47,21 +52,29 @@ def number_of_snps_plot(db,output):
     plt.legend()
 
     Path(output).mkdir(exist_ok=True)
-    plt.savefig(f"{output}/fig1_impact_severity.svg")
+    try:
+        plt.savefig(f"{output}/fig1_impact_severity.svg")
+    except ValueError as e:
+        print("The following problem ocurred when trying to save the file:",e)
+    
     plt.close()
 
 def snp_quality_scores_plot(db,output):
-    with sqlite3.connect(db) as con:
-        query = """
-        SELECT 
-            EFFECTS.mod as impact, 
-            SNPS.qual 
-        FROM 
-            SNPS 
-        JOIN 
-            EFFECTS ON SNPS.id = EFFECTS.id;
-        """
-        df = pd.read_sql_query(query,con)
+    try:
+        with sqlite3.connect(db) as con:
+            query = """
+            SELECT 
+                EFFECTS.mod as impact, 
+                SNPS.qual 
+            FROM 
+                SNPS 
+            JOIN 
+                EFFECTS ON SNPS.id = EFFECTS.id;
+            """
+            df = pd.read_sql_query(query,con)
+    except sqlite3.DatabaseError as e:
+        print("The following error ocurred when trying to acess the database:",e)
+    
     
     impact_order = ['HIGH', 'MODERATE', 'LOW', 'MODIFIER']
     df['impact'] = pd.Categorical(df['impact'], categories=impact_order, ordered=True)
@@ -73,7 +86,11 @@ def snp_quality_scores_plot(db,output):
     plt.title('Distribuition of snp quality scores across impact categories')
 
     Path(output).mkdir(exist_ok=True)
-    plt.savefig(f"{output}/fig2_snp_quality_scores.svg")
+
+    try:   
+        plt.savefig(f"{output}/fig2_snp_quality_scores.svg")
+    except ValueError as e:
+        print("The following error ocurred when trying to save the figure:",e)
     plt.close()
 
 
