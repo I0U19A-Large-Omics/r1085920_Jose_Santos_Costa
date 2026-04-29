@@ -216,6 +216,11 @@ rule create_database:
     shell:
         """
         python load_vcf_to_sqlite.py {input.vcf} {output}
+        echo "Running DB queries"
+        sqlite3 {output.db} "SELECT 'Total SNPs:', COUNT(*) FROM SNP;"
+        sqlite3 {output.db} "SELECT 'Orphaned Effects:', COUNT(*) FROM Effect WHERE snp_id NOT IN (SELECT id FROM SNP);"
+        sqlite3 {output.db} "SELECT 'Genotype Counts:', genotype, COUNT(*) FROM Call GROUP BY genotype;"
+        echo "Finished the queries"
         """
 
 
