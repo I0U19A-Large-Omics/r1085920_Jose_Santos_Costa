@@ -227,8 +227,7 @@ rule create_figures:
     params:
         folder = "160.figures"
     output:
-        
-        fig1 = "160.figures/fig1_impact_severity.svg"
+        fig1 = "160.figures/fig1_impact_severity.svg",
         fig2 = "160.figures/fig2_snp_quality_scores.svg"
     shell:
         """
