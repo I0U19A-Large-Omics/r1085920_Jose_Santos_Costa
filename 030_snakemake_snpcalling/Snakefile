@@ -215,8 +215,8 @@ rule upload_final_vcf:
         flag = "validated/upload_vcf.flag"
     shell:
         """
-        iron mkdir /gbiomed/home/large_omics_course/output/r1085920
-        iron upload {input.vcf} /gbiomed/home/large_omics_course/output/r1085920
+        iron mkdir /gbiomed/home/large_omics_course/output/r1085920/ || true
+        iron upload {input.vcf} /gbiomed/home/large_omics_course/output/r1085920/
         echo "Successfully uploaded the vcf file to ManGO"
         touch {output.flag}
         """
