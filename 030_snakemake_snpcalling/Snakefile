@@ -206,6 +206,18 @@ rule validate_annotated_vcf:
         touch {output.ok}
         """
 
+rule upload_final_vcf:
+    input:
+        vcf = "vcf/annotated_snps.vcf",
+        ok = "validated/annotated_snps.vcf.ok"
+    shell:
+        """
+        iron mkdir /gbiomed/home/large_omics_course/output/r1085920
+        iron upload {input.vcf} /gbiomed/home/large_omics_course/output/r1085920
+        """
+
+
+
 #create the final annotated tsv
 rule create_annotated_tsv:
     input:
