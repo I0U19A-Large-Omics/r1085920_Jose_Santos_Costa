@@ -19,7 +19,7 @@ rule download_fastq_files:
         "{sample}.fastq"
     shell:
         """
-        iron download /gbiomed/home/large_omics_course/fastq/{sample}.fastq
+        iron download /gbiomed/home/large_omics_course/fastq/{wildcards.sample}.fastq
         """
 
 #check the checksums and format of the fastq files 
