@@ -11,7 +11,8 @@ rule all:
         tsv = "100.final/snps.annotated.tsv",
         sql_db = "150.db/snps.sqlite",
         fig1 = "160.figures/fig1_impact_severity.svg",
-        fig2 = "160.figures/fig2_snp_quality_scores.svg"
+        fig2 = "160.figures/fig2_snp_quality_scores.svg",
+        upload = "validated/upload_vcf.flag"
 
 
 rule download_fastq_files:
@@ -210,10 +211,14 @@ rule upload_final_vcf:
     input:
         vcf = "vcf/annotated_snps.vcf",
         ok = "validated/annotated_snps.vcf.ok"
+    output:
+        flag = "validated/upload_vcf.flag"
     shell:
         """
         iron mkdir /gbiomed/home/large_omics_course/output/r1085920
         iron upload {input.vcf} /gbiomed/home/large_omics_course/output/r1085920
+        echo "Successfully uploaded the vcf file to ManGO"
+        touch {output.flag}
         """
 
 
