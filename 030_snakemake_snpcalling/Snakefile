@@ -3,12 +3,24 @@ DB = "/staging/leuven/stg_00079/teaching/hg38_9/chr9.fa" #database path
 SNPEFF_JAR = "/lustre1/project/stg_00079/teaching/I0U19a_conda_2026/share/snpeff-5.4.0a-0/snpEff.jar"
 
 
+
+
 rule all:
     input:
+        samples = expand("{sample}.fastq",sample=SAMPLES),
         tsv = "100.final/snps.annotated.tsv",
         sql_db = "150.db/snps.sqlite",
         fig1 = "160.figures/fig1_impact_severity.svg",
         fig2 = "160.figures/fig2_snp_quality_scores.svg"
+
+
+rule download_fastq_files:
+    output:
+        "{sample}.fastq"
+    shell:
+        """
+        iron download /gbiomed/home/large_omics_course/fastq/{sample}.fastq
+        """
 
 #check the checksums and format of the fastq files 
 rule checksum_fastq:
